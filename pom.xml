@@ -22,9 +22,11 @@
 
 		<!-- The Maven repo folder path -->
 		<mvn.repo.dir>${project.build.directory}/../../mvn-repo</mvn.repo.dir>
+		<mvn.repo.dir.releases>${mvn.repo.dir}/releases</mvn.repo.dir.releases>
+		<mvn.repo.dir.snapshots>${mvn.repo.dir}/snapshots</mvn.repo.dir.snapshots>
 		<mvn.repo.dir.uri>file://${mvn.repo.dir}</mvn.repo.dir.uri>
-		<mvn.repo.dir.releases.uri>${mvn.repo.dir.uri}/releases</mvn.repo.dir.releases.uri>
-		<mvn.repo.dir.snapshots.uri>${mvn.repo.dir.uri}/snapshots</mvn.repo.dir.snapshots.uri>
+		<mvn.repo.dir.releases.uri>file://${mvn.repo.dir.releases}</mvn.repo.dir.releases.uri>
+		<mvn.repo.dir.snapshots.uri>file://${mvn.repo.dir.snapshots}</mvn.repo.dir.snapshots.uri>
 		<!-- github server corresponds to entry in ~/.m2/settings.xml -->
 		<github.global.server>github</github.global.server>
 	</properties>
@@ -105,7 +107,7 @@
 				<artifactId>maven-deploy-plugin</artifactId>
 				<version>2.8.1</version>
 				<configuration>
-					<altDeploymentRepository>internal.repo::default::${mvn.repo.dir.uri}</altDeploymentRepository>
+					<altDeploymentRepository>internal.repo::default::${mvn.repo.dir.releases.uri}</altDeploymentRepository>
 				</configuration>
 			</plugin>
 
@@ -119,7 +121,7 @@
 					<!-- disable webpage processing -->
 					<noJekyll>true</noJekyll>
 					<!-- matches distribution management repository url above -->
-					<outputDirectory>${mvn.repo.dir}</outputDirectory>
+					<outputDirectory>${mvn.repo.dir.releases}</outputDirectory>
 					<!-- remote branch name -->
 					<branch>refs/heads/master</branch>
 					<!-- If you remove this then the old artifact will be removed and new 
