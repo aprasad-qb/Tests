@@ -19,7 +19,27 @@
 
 		<!-- The main class -->
 		<main.class>com.asp.TestTimeUUID</main.class>
+
+		<!-- The Maven repo folder path -->
+		<mvn.repo.dir>${project.build.directory}/../../mvn-repo</mvn.repo.dir>
+		<mvn.repo.dir.uri>file://${mvn.repo.dir}</mvn.repo.dir.uri>
+		<mvn.repo.dir.releases.uri>${mvn.repo.dir.uri}/releases</mvn.repo.dir.releases.uri>
+		<mvn.repo.dir.snapshots.uri>${mvn.repo.dir.uri}/snapshots</mvn.repo.dir.snapshots.uri>
+		<!-- github server corresponds to entry in ~/.m2/settings.xml -->
+		<github.global.server>github</github.global.server>
 	</properties>
+
+	<distributionManagement>
+		<repository>
+			<id>internal.repo</id>
+			<name>Temporary Staging Repository</name>
+			<url>${mvn.repo.dir.releases.uri}</url>
+		</repository>
+		<snapshotRepository>
+			<id>snapshot-repo</id>
+			<url>${mvn.repo.dir.snapshots.uri}</url>
+		</snapshotRepository>
+	</distributionManagement>
 
 	<build>
 		<sourceDirectory>src</sourceDirectory>
@@ -78,8 +98,60 @@
 					<target>${java.version}</target>
 				</configuration>
 			</plugin>
+
+			<!-- Maven Deploy to GitHub -->
+			<!-- http://malalanayake.wordpress.com/2014/03/10/create-simple-maven-repository-on-github/ -->
+			<plugin>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>2.8.1</version>
+				<configuration>
+					<altDeploymentRepository>internal.repo::default::${mvn.repo.dir.uri}</altDeploymentRepository>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>com.github.github</groupId>
+				<artifactId>site-maven-plugin</artifactId>
+				<version>0.8</version>
+				<configuration>
+					<!-- git commit message -->
+					<message>Maven artifacts for ${project.version}</message>
+					<!-- disable webpage processing -->
+					<noJekyll>true</noJekyll>
+					<!-- matches distribution management repository url above -->
+					<outputDirectory>${mvn.repo.dir}</outputDirectory>
+					<!-- remote branch name -->
+					<branch>refs/heads/master</branch>
+					<!-- If you remove this then the old artifact will be removed and new 
+						one will replace. But with the merge tag you can just release by changing 
+						the version -->
+					<merge>true</merge>
+					<includes>
+						<include>**/*</include>
+					</includes>
+					<!-- github repo name -->
+					<repositoryName>mvn-repo</repositoryName>
+					<!-- github username -->
+					<repositoryOwner>aprasad-qb</repositoryOwner>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>site</goal>
+						</goals>
+						<phase>deploy</phase>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
+
+	<!-- Maven Deploy to GitHub -->
+	<scm>
+		<developerConnection>scm:git:git://github.com:aprasad-qb/mv-repo.git</developerConnection>
+		<connection>scm:git:git://github.com/aprasad-qb/mv-repo.git</connection>
+		<url>https://github.com/aprasad-qb/mv-repo</url>
+	</scm>
 
 	<dependencies>
 		<!-- Datastax Cassandra client -->
